@@ -1,0 +1,35 @@
+#!/bin/bash
+#update---------------------------------------------------------------
+sudo apt-get update; sudo apt-get dist-upgrade -y
+#check----------------------------------------------------------------
+whonixcheck
+#packeges-------------------------------------------------------------
+sudo apt install $(curl https://raw.githubusercontent.com/supersimetria/L_whonix/main/mod/pl-0) -y
+#update-torbrowser----------------------------------------------------
+update-torbrowser --ordinary --noask
+#paper-icon-theme-----------------------------------------------------
+cd; git clone https://github.com/snwh/paper-icon-theme.git
+cd paper-icon-theme
+meson "build" --prefix=/usr
+sudo ninja -C "build" install
+cd ..; sudo rm -r paper-icon-theme
+#chicago95------------------------------------------------------------
+cd; git clone https://github.com/grassmunk/Chicago95.git
+#[system-wide manual install]-----------------------------------------
+sudo cp -r Chicago95/Theme/Chicago95/ /usr/share/themes/
+sudo cp -r Chicago95/Icons/* /usr/share/icons/
+#[GTK3 override configuration]----------------------------------------
+mkdir -p ~/.config/gtk-3.0
+cp ~/Chicago95/Extras/override/gtk-3.22/gtk.css ~/.config/gtk-3.0/
+#[QT5 theme configration with qt5ct]----------------------------------
+sudo sed -i 's/export XDG_DATA_DIRS/export QT_QPA_PLATFORMTHEME=qt5ct/' /etc/X11/Xsession.d/55xfce4-session
+#[cursors]-----------------------------------------------------------
+sudo cp -r ~/Chicago95/Cursors/ /usr/share/icons/
+sudo cp -r ~/Chicago95/Cursors/ ~/.icons
+#[MS Sans Serif font]-------------------------------------------------
+sudo mkdir -p /usr/share/fonts/truetype/ms_sans_serif
+mkdir -p ~/.config/fontconfig/conf.d/
+wget https://github.com/cmcmahan/Xplanet/raw/master/fonts/micross.ttf
+wget -O ~/MSSansSerif.ttf https://andryushkin.ru/wp-content/fonts/MicrosoftSansSerifRegular/MicrosoftSansSerifRegular.ttf -N
+sudo mv micross.ttf MSSansSerif.ttf /usr/share/fonts/truetype/ms_sans_serif/
+cd ~/Chicago95/Extras/; sudo cp 99-ms-sans-serif.conf 99-ms-sans-serif-bold.conf /usr/share/fonts/truetype/ms_sans_serif
